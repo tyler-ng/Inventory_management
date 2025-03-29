@@ -1,0 +1,273 @@
+erDiagram
+    PRODUCT {
+        int id PK
+        string sku UK
+        string name
+        string description
+        string category
+        int quantity
+        int reorder_level
+        decimal price
+        decimal cost_price
+        decimal weight
+        string dimensions
+        string image_url
+        string barcode
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+    
+    CATEGORY {
+        int id PK
+        string name UK
+        string description
+        int parent_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    
+    SUPPLIER {
+        int id PK
+        string name
+        string contact_person
+        string email
+        string phone
+        string address
+        string tax_id
+        string payment_terms
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+    
+    WAREHOUSE {
+        int id PK
+        string name
+        string location
+        string address
+        string manager
+        string phone
+        string email
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+    
+    WAREHOUSE_LOCATION {
+        int id PK
+        int warehouse_id FK
+        string zone
+        string aisle
+        string rack
+        string shelf
+        string bin
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+    
+    INVENTORY_TRANSACTION {
+        int id PK
+        int product_id FK
+        int warehouse_id FK
+        int source_location_id FK
+        int destination_location_id FK
+        string type
+        int quantity
+        string reference_number
+        int user_id FK
+        string notes
+        datetime created_at
+    }
+    
+    PURCHASE_ORDER {
+        int id PK
+        string po_number UK
+        int supplier_id FK
+        int warehouse_id FK
+        date order_date
+        date expected_date
+        string status
+        decimal total_amount
+        string payment_terms
+        string shipping_terms
+        int user_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    
+    PURCHASE_ORDER_ITEM {
+        int id PK
+        int purchase_order_id FK
+        int product_id FK
+        int quantity
+        decimal unit_price
+        decimal total_price
+        datetime created_at
+        datetime updated_at
+    }
+    
+    SALES_ORDER {
+        int id PK
+        string so_number UK
+        int customer_id FK
+        int warehouse_id FK
+        date order_date
+        date shipping_date
+        string status
+        decimal subtotal
+        decimal tax
+        decimal shipping_cost
+        decimal total_amount
+        string payment_status
+        int user_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    
+    SALES_ORDER_ITEM {
+        int id PK
+        int sales_order_id FK
+        int product_id FK
+        int quantity
+        decimal unit_price
+        decimal discount
+        decimal total_price
+        datetime created_at
+        datetime updated_at
+    }
+    
+    CUSTOMER {
+        int id PK
+        string name
+        string contact_person
+        string email
+        string phone
+        string address
+        string tax_id
+        string payment_terms
+        string status
+        datetime created_at
+        datetime updated_at
+    }
+    
+    USER {
+        int id PK
+        string username UK
+        string password_hash
+        string email UK
+        string full_name
+        string role
+        string status
+        datetime last_login
+        datetime created_at
+        datetime updated_at
+    }
+    
+    AUDIT_LOG {
+        int id PK
+        int user_id FK
+        string action
+        string entity_type
+        int entity_id
+        string old_values
+        string new_values
+        string ip_address
+        datetime created_at
+    }
+    
+    PRODUCT_SUPPLIER {
+        int product_id PK,FK
+        int supplier_id PK,FK
+        decimal unit_cost
+        int min_order_quantity
+        int lead_time_days
+        string supplier_sku
+        datetime created_at
+        datetime updated_at
+    }
+    
+    PRODUCT_WAREHOUSE {
+        int product_id PK,FK
+        int warehouse_id PK,FK
+        int location_id FK
+        int quantity
+        datetime created_at
+        datetime updated_at
+    }
+    
+    PRODUCT_ATTACHMENT {
+        int id PK
+        int product_id FK
+        string file_name
+        string file_path
+        string file_type
+        int file_size
+        datetime created_at
+    }
+    
+    PRODUCT_VARIANT {
+        int id PK
+        int product_id FK
+        string sku UK
+        string attributes
+        int quantity
+        decimal price
+        decimal cost_price
+        string barcode
+        datetime created_at
+        datetime updated_at
+    }
+    
+    PRODUCT_BUNDLE {
+        int id PK
+        int parent_product_id FK
+        int child_product_id FK
+        int quantity
+        datetime created_at
+        datetime updated_at
+    }
+
+    PRODUCT_CATEGORY {
+        int product_id PK,FK
+        int category_id PK,FK
+    }
+
+    PRODUCT }|--|| CATEGORY : "belongs to"
+    CATEGORY ||--o{ CATEGORY : "has subcategories"
+    PRODUCT ||--o{ INVENTORY_TRANSACTION : "has"
+    PRODUCT ||--o{ PURCHASE_ORDER_ITEM : "ordered in"
+    PRODUCT ||--o{ SALES_ORDER_ITEM : "sold in"
+    PRODUCT ||--o{ PRODUCT_SUPPLIER : "supplied by"
+    PRODUCT ||--o{ PRODUCT_WAREHOUSE : "stored in"
+    PRODUCT ||--o{ PRODUCT_ATTACHMENT : "has"
+    PRODUCT ||--o{ PRODUCT_VARIANT : "has variants"
+    PRODUCT ||--o{ PRODUCT_BUNDLE : "parent in"
+    PRODUCT ||--o{ PRODUCT_BUNDLE : "child in"
+    PRODUCT ||--o{ PRODUCT_CATEGORY : "belongs to"
+    
+    SUPPLIER ||--o{ PURCHASE_ORDER : "receives"
+    SUPPLIER ||--o{ PRODUCT_SUPPLIER : "supplies"
+    
+    WAREHOUSE ||--o{ WAREHOUSE_LOCATION : "contains"
+    WAREHOUSE ||--o{ INVENTORY_TRANSACTION : "handles"
+    WAREHOUSE ||--o{ PURCHASE_ORDER : "receives"
+    WAREHOUSE ||--o{ SALES_ORDER : "ships from"
+    WAREHOUSE ||--o{ PRODUCT_WAREHOUSE : "stores"
+    
+    WAREHOUSE_LOCATION ||--o{ PRODUCT_WAREHOUSE : "stores"
+    WAREHOUSE_LOCATION ||--o{ INVENTORY_TRANSACTION : "source of"
+    WAREHOUSE_LOCATION ||--o{ INVENTORY_TRANSACTION : "destination of"
+    
+    PURCHASE_ORDER ||--o{ PURCHASE_ORDER_ITEM : "contains"
+    PURCHASE_ORDER ||--|| USER : "created by"
+    
+    SALES_ORDER ||--o{ SALES_ORDER_ITEM : "contains"
+    SALES_ORDER ||--|| USER : "created by"
+    SALES_ORDER ||--|| CUSTOMER : "ordered by"
+    
+    USER ||--o{ AUDIT_LOG : "performs"
+    USER ||--o{ INVENTORY_TRANSACTION : "performs"
+    
+    CATEGORY ||--o{ PRODUCT_CATEGORY : "has products"
