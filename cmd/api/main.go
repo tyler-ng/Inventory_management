@@ -27,9 +27,15 @@ func main() {
 	// Initialize database
 	db, err := database.InitDB(cfg)
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
+	// Run database migrations
+	if err := database.MigrateDB(db); err != nil {
+		log.Fatalf("Failed to run migrations: %v", err)
+	}
+
+	// Get underlying SQL database connection
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatalf("Failed to get database connection: %v", err)
